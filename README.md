@@ -1,4 +1,4 @@
-# Parallel Pipline
+# Parallel Pipeline
 A blazing fast library that allows data pipelines to work in parallel. This can traverse and transform extremely large text files (100GB or more) in seconds. 
 ## Usage
 
