@@ -8,8 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// go run example.go transform "/Users/dsm/Desktop/test/test.txt"
-
 // example text transformations
 func RemoveAllSmileyFaces() *pipeline.Transformer {
 	return &pipeline.Transformer{
