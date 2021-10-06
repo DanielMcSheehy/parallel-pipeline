@@ -1,5 +1,4 @@
-![example workflow](https://github.com/DanielMcSheehy/parallel-pipeline/actions/workflows/tests.yaml/badge.svg)
-# Parallel Pipeline
+# Parallel Pipeline ![example workflow](https://github.com/DanielMcSheehy/parallel-pipeline/actions/workflows/tests.yaml/badge.svg)
 A blazing fast library that allows data pipelines to work in parallel. This can traverse and transform extremely large text files (100GB or more) in seconds. 
 ## Usage
 
