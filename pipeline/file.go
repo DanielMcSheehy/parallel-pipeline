@@ -1,4 +1,4 @@
-package main
+package pipeline
 
 import (
 	"fmt"
@@ -56,7 +56,7 @@ func (p *Pipeline) writeFile(output concurrently.OrderedOutput) error {
 	// If the file doesn't exist, create it, or append to the file
 	f, err := os.OpenFile(metadata.fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if _, err := f.Write([]byte(metadata.content)); err != nil {
@@ -64,6 +64,8 @@ func (p *Pipeline) writeFile(output concurrently.OrderedOutput) error {
 	}
 
 	if err := f.Close(); err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }

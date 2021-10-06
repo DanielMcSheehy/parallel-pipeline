@@ -13,7 +13,7 @@ import (
 // example text transformations
 func RemoveAllSmileyFaces() *pipeline.Transformer {
 	return &pipeline.Transformer{
-		transform: func(input string) string {
+		Transform: func(input string) string {
 			return strings.ReplaceAll(input, "😀", "")
 		},
 	}
@@ -21,7 +21,7 @@ func RemoveAllSmileyFaces() *pipeline.Transformer {
 
 func ReplaceSadWithHappy() *pipeline.Transformer {
 	return &pipeline.Transformer{
-		transform: func(input string) string {
+		Transform: func(input string) string {
 			return strings.ReplaceAll(input, "sad", "happy")
 		},
 	}

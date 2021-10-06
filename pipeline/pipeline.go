@@ -1,4 +1,4 @@
-package main
+package pipeline
 
 import (
 	"os"
@@ -8,11 +8,11 @@ import (
 )
 
 type Transform interface {
-	transform(input string) string
+	Transform(input string) string
 }
 
 type Transformer struct {
-	transform func(input string) string
+	Transform func(input string) string
 }
 
 type Pipeline struct {
@@ -37,7 +37,7 @@ func (p *Pipeline) New(workerCount int) *Pipeline {
 func (m *TextMetadata) Run() interface{} {
 	text := m.content
 	for _, t := range m.transformers {
-		text = t.transform(text)
+		text = t.Transform(text)
 	}
 	return text
 }
