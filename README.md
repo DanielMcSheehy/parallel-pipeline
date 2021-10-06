@@ -16,7 +16,7 @@ func RemoveAllSmileyFaces() *pipeline.Transformer {
 	}
 }
 ```
-
+start the data pipeline
 ```go
 func main() {
     mainPipeline := pipeline.New(workerCount)
