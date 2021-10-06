@@ -3,8 +3,8 @@ module github.com/DanielMcSheehy/parallel-pipeline
 go 1.17
 
 require (
+	github.com/magiconair/properties v1.8.5
 	github.com/spf13/cobra v1.2.1
-	github.com/tejzpr/ordered-concurrently v1.0.12
 	github.com/tejzpr/ordered-concurrently/v2 v2.0.0
 )
 
