@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	"github.com/data-pipeline/pipeline"
+	"github.com/DanielMcSheehy/parallel-pipeline/pipeline"
 
 	"github.com/spf13/cobra"
 )

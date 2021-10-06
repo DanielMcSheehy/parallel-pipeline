@@ -1,4 +1,4 @@
-module data-pipeline
+module parallel-pipeline
 
 go 1.17
 
