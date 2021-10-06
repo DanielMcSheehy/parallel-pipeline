@@ -31,16 +31,17 @@ var workerCount = 3
 
 func main() {
 	var cmdTransform = &cobra.Command{
-		Use:   "transform [directory to read]",
+		Use:   "transform [directory to read] [output directory]",
 		Short: "transform all files in a directory",
 		Long:  `transform all files in a directory.`,
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MinimumNArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			mainPipeline := pipeline.New(workerCount)
 			mainPipeline.RegisterTransformers(
 				RemoveAllSmileyFaces(),
 				ReplaceSadWithHappy(),
 			)
+			mainPipeline.Execute(args[0], args[1])
 		},
 	}
 

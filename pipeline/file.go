@@ -9,12 +9,12 @@ import (
 	concurrently "github.com/tejzpr/ordered-concurrently/v2"
 )
 
-func (p *Pipeline) readAndSendFile(file os.FileInfo, inputCh chan concurrently.WorkFunction) error {
+func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan concurrently.WorkFunction) error {
 	size := file.Size()
 
-	f, err := os.Open(file.Name())
+	f, err := os.Open(dir + "/" + file.Name())
 	if err != nil {
-		fmt.Println("cannot able to read the file", err)
+		fmt.Println("not able to read the file", err)
 		return err
 	}
 
@@ -50,11 +50,11 @@ func (p *Pipeline) readAndSendFile(file os.FileInfo, inputCh chan concurrently.W
 	return nil
 }
 
-func (p *Pipeline) writeFile(output concurrently.OrderedOutput) error {
+func (p *Pipeline) writeFile(dir string, output concurrently.OrderedOutput) error {
 	metadata := output.Value.(TextMetadata)
 
 	// If the file doesn't exist, create it, or append to the file
-	f, err := os.OpenFile(metadata.fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(dir+"/"+metadata.fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

@@ -39,7 +39,10 @@ func (m TextMetadata) Run() interface{} {
 	for _, t := range m.transformers {
 		text = t.Transform(text)
 	}
-	return text
+	return TextMetadata{
+		fileName: m.fileName,
+		content:  text,
+	}
 }
 
 func (p *Pipeline) RegisterTransformers(transformerList ...*Transformer) {
@@ -48,16 +51,16 @@ func (p *Pipeline) RegisterTransformers(transformerList ...*Transformer) {
 
 func (p *Pipeline) generateTransformWorkers() (chan concurrently.WorkFunction, <-chan concurrently.OrderedOutput) {
 	inputCh := make(chan concurrently.WorkFunction)
-	output := concurrently.Process(inputCh, &concurrently.Options{PoolSize: 10, OutChannelBuffer: 10})
+	output := concurrently.Process(inputCh, &concurrently.Options{PoolSize: p.workers, OutChannelBuffer: p.workers})
 	return inputCh, output
 }
 
-func (p *Pipeline) Execute(dir string) error {
+func (p *Pipeline) Execute(dir, outputDir string) error {
 	inputCh, output := p.generateTransformWorkers()
 
 	err := filepath.Walk(dir, func(path string, file os.FileInfo, err error) error {
-		if !file.IsDir() {
-			err := p.readAndSendFile(file, inputCh)
+		if file != nil && !file.IsDir() {
+			err := p.readAndSendFile(dir, file, inputCh)
 			if err != nil {
 				return err
 			}
@@ -66,7 +69,7 @@ func (p *Pipeline) Execute(dir string) error {
 	})
 
 	for out := range output {
-		go p.writeFile(out)
+		go p.writeFile(outputDir, out)
 	}
 
 	return err
