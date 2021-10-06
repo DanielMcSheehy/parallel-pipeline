@@ -6,11 +6,10 @@ import (
 	"log"
 	"os"
 
-	orderedconcurrently "github.com/tejzpr/ordered-concurrently"
 	concurrently "github.com/tejzpr/ordered-concurrently/v2"
 )
 
-func (p *Pipeline) readAndSendFile(file os.FileInfo, inputCh chan orderedconcurrently.WorkFunction) error {
+func (p *Pipeline) readAndSendFile(file os.FileInfo, inputCh chan concurrently.WorkFunction) error {
 	size := file.Size()
 
 	f, err := os.Open(file.Name())
@@ -35,6 +34,7 @@ func (p *Pipeline) readAndSendFile(file os.FileInfo, inputCh chan orderedconcurr
 			}
 			break
 		}
+
 		inputCh <- TextMetadata{
 			fileName:     file.Name(),
 			content:      string(b[:readTotal]),

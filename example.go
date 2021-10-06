@@ -37,7 +37,10 @@ func main() {
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			mainPipeline := pipeline.New(workerCount)
-			mainPipeline.RegisterTransformers()
+			mainPipeline.RegisterTransformers(
+				RemoveAllSmileyFaces(),
+				ReplaceSadWithHappy(),
+			)
 		},
 	}
 

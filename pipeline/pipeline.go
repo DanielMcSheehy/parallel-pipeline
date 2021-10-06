@@ -27,14 +27,14 @@ type TextMetadata struct {
 	transformers []*Transformer
 }
 
-func (p *Pipeline) New(workerCount int) *Pipeline {
+func New(workerCount int) *Pipeline {
 	return &Pipeline{
 		workers:      workerCount,
 		transformers: []*Transformer{},
 	}
 }
 
-func (m *TextMetadata) Run() interface{} {
+func (m TextMetadata) Run() interface{} {
 	text := m.content
 	for _, t := range m.transformers {
 		text = t.Transform(text)
@@ -42,7 +42,7 @@ func (m *TextMetadata) Run() interface{} {
 	return text
 }
 
-func (p *Pipeline) RegisterTransformers(transformerList []*Transformer) {
+func (p *Pipeline) RegisterTransformers(transformerList ...*Transformer) {
 	p.transformers = transformerList
 }
 
