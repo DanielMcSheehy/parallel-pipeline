@@ -19,10 +19,10 @@ func RemoveAllSmileyFaces() *pipeline.Transformer {
 
 ```go
 func main() {
-			mainPipeline := pipeline.New(workerCount)
-			mainPipeline.RegisterTransformers(
-				RemoveAllSmileyFaces(),
-			)
-			mainPipeline.Execute(directory, ouputDirectory)
+    mainPipeline := pipeline.New(workerCount)
+    mainPipeline.RegisterTransformers(
+        RemoveAllSmileyFaces(),
+    )
+    mainPipeline.Execute(directory, ouputDirectory)
 }
 ```
