@@ -22,7 +22,6 @@ func main() {
 			mainPipeline := pipeline.New(workerCount)
 			mainPipeline.RegisterTransformers(
 				RemoveAllSmileyFaces(),
-				ReplaceSadWithHappy(),
 			)
 			mainPipeline.Execute(directory, ouputDirectory)
 }
