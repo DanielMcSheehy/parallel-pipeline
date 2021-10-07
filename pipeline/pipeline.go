@@ -60,10 +60,7 @@ func (p *Pipeline) Execute(dir, outputDir string) error {
 
 	err := filepath.Walk(dir, func(path string, file os.FileInfo, err error) error {
 		if file != nil && !file.IsDir() {
-			err := p.readAndSendFile(dir, file, inputCh)
-			if err != nil {
-				return err
-			}
+			go p.readAndSendFile(dir, file, inputCh)
 		}
 		return nil
 	})
