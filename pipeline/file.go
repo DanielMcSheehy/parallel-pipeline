@@ -5,11 +5,12 @@ import (
 	"io"
 	"log"
 	"os"
+	"sync"
 
 	concurrently "github.com/tejzpr/ordered-concurrently/v2"
 )
 
-func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan concurrently.WorkFunction) error {
+func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan concurrently.WorkFunction, quit chan bool) error {
 	size := file.Size()
 
 	f, err := os.Open(dir + "/" + file.Name())
@@ -18,12 +19,14 @@ func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan co
 		return err
 	}
 
+	// create buffer
+	// max chunk size is number of workers
+	b := make([]byte, size/int64(p.workers)+1)
+
 	defer f.Close() // Do not forget to close the file
 
-	// create buffer
-	// max chunk size is number of works
-	index := 0
-	b := make([]byte, size/int64(p.workers))
+	var wg sync.WaitGroup
+	wg.Add(int(size / int64(p.workers)))
 
 	for {
 		// read content to buffer
@@ -35,13 +38,18 @@ func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan co
 			break
 		}
 
+		fmt.Println("file: ", string(b[:readTotal]))
+
 		inputCh <- TextMetadata{
 			fileName:     file.Name(),
 			content:      string(b[:readTotal]),
 			transformers: p.transformers,
 		}
-		index++
+		defer wg.Done()
 	}
+
+	close(inputCh)
+	wg.Wait()
 
 	if err != nil {
 		return err

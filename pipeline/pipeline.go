@@ -1,6 +1,7 @@
 package pipeline
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -51,21 +52,23 @@ func (p *Pipeline) RegisterTransformers(transformerList ...*Transformer) {
 
 func (p *Pipeline) generateTransformWorkers() (chan concurrently.WorkFunction, <-chan concurrently.OrderedOutput) {
 	inputCh := make(chan concurrently.WorkFunction)
-	output := concurrently.Process(inputCh, &concurrently.Options{PoolSize: p.workers, OutChannelBuffer: p.workers})
+	output := concurrently.Process(inputCh, &concurrently.Options{PoolSize: 10, OutChannelBuffer: 10})
 	return inputCh, output
 }
 
 func (p *Pipeline) Execute(dir, outputDir string) error {
 	inputCh, output := p.generateTransformWorkers()
+	quit := make(chan bool)
 
 	err := filepath.Walk(dir, func(path string, file os.FileInfo, err error) error {
 		if file != nil && !file.IsDir() {
-			go p.readAndSendFile(dir, file, inputCh)
+			go p.readAndSendFile(dir, file, inputCh, quit)
 		}
 		return nil
 	})
 
 	for out := range output {
+		fmt.Println("out", out)
 		go p.writeFile(outputDir, out)
 	}
 
