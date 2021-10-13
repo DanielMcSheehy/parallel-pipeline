@@ -1,55 +1,36 @@
 package pipeline
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"os"
-	"sync"
 
 	concurrently "github.com/tejzpr/ordered-concurrently/v2"
 )
 
 func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan concurrently.WorkFunction, quit chan bool) error {
-	size := file.Size()
-
 	f, err := os.Open(dir + "/" + file.Name())
 	if err != nil {
 		fmt.Println("not able to read the file", err)
 		return err
 	}
 
-	// create buffer
-	// max chunk size is number of workers
-	b := make([]byte, size/int64(p.workers)+1)
-
 	defer f.Close() // Do not forget to close the file
 
-	var wg sync.WaitGroup
-	wg.Add(int(size / int64(p.workers)))
-
-	for {
-		// read content to buffer
-		readTotal, err := f.Read(b)
-		if err != nil {
-			if err != io.EOF {
-				fmt.Println(err)
-			}
-			break
-		}
-
-		fmt.Println("file: ", string(b[:readTotal]))
-
+	scanner := bufio.NewScanner(f)
+	// Not actually needed since it’s a default split function.
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		fmt.Println("file: ", scanner.Text())
 		inputCh <- TextMetadata{
 			fileName:     file.Name(),
-			content:      string(b[:readTotal]),
+			content:      scanner.Text(),
 			transformers: p.transformers,
 		}
-		defer wg.Done()
 	}
 
 	close(inputCh)
-	wg.Wait()
 
 	if err != nil {
 		return err
@@ -58,7 +39,7 @@ func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan co
 	return nil
 }
 
-func (p *Pipeline) writeFile(dir string, output concurrently.OrderedOutput) error {
+func (p *Pipeline) writeFile(dir string, output concurrently.OrderedOutput, quit chan bool) error {
 	metadata := output.Value.(TextMetadata)
 
 	// If the file doesn't exist, create it, or append to the file
@@ -67,7 +48,7 @@ func (p *Pipeline) writeFile(dir string, output concurrently.OrderedOutput) erro
 		return err
 	}
 
-	if _, err := f.Write([]byte(metadata.content)); err != nil {
+	if _, err := f.Write([]byte(metadata.content + "\n")); err != nil {
 		log.Fatal(err)
 	}
 

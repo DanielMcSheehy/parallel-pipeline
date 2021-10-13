@@ -1,7 +1,6 @@
 package pipeline
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -68,8 +67,7 @@ func (p *Pipeline) Execute(dir, outputDir string) error {
 	})
 
 	for out := range output {
-		fmt.Println("out", out)
-		go p.writeFile(outputDir, out)
+		p.writeFile(outputDir, out, quit)
 	}
 
 	return err
