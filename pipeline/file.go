@@ -16,7 +16,8 @@ func (p *Pipeline) readAndSendFile(dir string, file os.FileInfo, inputCh chan co
 		return err
 	}
 
-	defer f.Close() // Do not forget to close the file
+	// Do not forget to close the file
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	// Not actually needed since it’s a default split function.
